@@ -1,0 +1,45 @@
+services:
+  # MongoDB Service
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secretpassword
+      MONGO_INITDB_DATABASE: mydatabase
+    
+
+  # Backend Node.js Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: always
+    ports:
+      - "3500:3500"
+    environment:
+      - NODE_ENV=production
+      - PORT=3500
+      - MONGO_CONN_STR=mongodb://admin:secretpassword@mongodb:27017/mydatabase?authSource=admin
+      - USE_DB_AUTH=true
+    depends_on:
+      - mongodb
+
+  # Frontend React Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:3500/api/tasks
+    depends_on:
+      - backend
+
