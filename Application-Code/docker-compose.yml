@@ -21,11 +21,8 @@ services:
     restart: always
     ports:
       - "3500:3500"
-    environment:
-      - NODE_ENV=production
-      - PORT=3500
-      - MONGO_CONN_STR=mongodb://admin:secretpassword@mongodb:27017/mydatabase?authSource=admin
-      - USE_DB_AUTH=true
+    env_file:
+      - ./backend/.env  
     depends_on:
       - mongodb
 
@@ -38,8 +35,7 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    environment:
-      - REACT_APP_BACKEND_URL=http://localhost:3500/api/tasks
+    env_file:
+      - ./frontend/.env  
     depends_on:
       - backend
-
